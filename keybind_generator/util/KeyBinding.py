@@ -27,6 +27,7 @@ class KeyBinding:
         self.ability_index = Index(abilities["name"])
         self.combinations = combinations
         self.home_nodes = home_nodes
+        self.unassigned: numpy.array = numpy.array(range(self.graph.size))
 
         self.node_priority: List[float] = []
         if node_priority is not None:
@@ -36,12 +37,13 @@ class KeyBinding:
         if assignments is not None:
             self.assignments = assignments
 
-    def unassigned(self) -> numpy.array:
+    def get_unassigned(self) -> numpy.array:
         """
         Returns list of unassigned indices
         :return:
         """
-        return numpy.setdiff1d(range(self.graph.size), self.assignments)
+        return self.unassigned
+        # return numpy.setdiff1d(range(self.graph.size), self.assignments)
 
     def get_assignment(self, ability_name: str) -> [int, None]:
         """
@@ -77,6 +79,7 @@ class KeyBinding:
         """
         if not self.has_assigned(index) and len(self.assignments) < self.graph.size:
             self.assignments.append(index)
+            self.unassigned = numpy.delete(self.unassigned, numpy.where(self.unassigned == index))
             return True
         else:
             return False
@@ -116,3 +119,16 @@ class KeyBinding:
             return numpy.sum(individual_terms) + numpy.sum(combination_terms)
         else:
             return numpy.nan
+
+    def __str__(self):
+        """
+        String representation of key binding
+        :return: String representation of key binding
+        """
+        if not self.assignments:
+            return ""
+
+        ability_names = self.abilities["name"][0:len(self.assignments)]
+        key_strings = [self.graph.names[entry] for entry in self.assignments]
+        binding_strings = [value + " : " + key_strings[index] for index, value in enumerate(ability_names)]
+        return "\n".join(binding_strings)

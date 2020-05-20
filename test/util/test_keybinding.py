@@ -27,21 +27,37 @@ class TestKeyBinding(unittest.TestCase):
                                      ["ice barrack>wrack #2", 2, "Yes", "", [2, 1]]])
         cls.combinations.columns = ["name", "priority", "ordered", "comment", "indices"]
 
+    def test_key_binding_string_generation(self):
+        key_binding = KeyBinding(self.graph, self.abilities, self.combinations, self.graph.get_node_indices(["a", "b"]))
+        self.assertEqual(str(key_binding), "")
+
+        key_binding.assign_next(0)
+        self.assertEqual(str(key_binding), "wrack : a")
+
+        key_binding.assign_next(1)
+        self.assertEqual(str(key_binding), "wrack : a\nwrack #2 : b")
+
+        key_binding.assign_next(2)
+
+        key_binding.assign_next(3)
+
+        print(key_binding)
+
     def test_key_binding_assignment(self):
         key_binding = KeyBinding(self.graph, self.abilities, self.combinations, self.graph.get_node_indices(["a", "b"]))
 
-        self.assertTrue(numpy.array_equal(key_binding.unassigned(), range(5)))
+        self.assertTrue(numpy.array_equal(key_binding.get_unassigned(), range(5)))
         self.assertTrue(key_binding.assign_next(0))
-        self.assertTrue(numpy.array_equal(key_binding.unassigned(), range(1, 5)))
+        self.assertTrue(numpy.array_equal(key_binding.get_unassigned(), range(1, 5)))
         self.assertFalse(key_binding.fully_assigned())
         self.assertTrue(key_binding.assign_next(1))
-        self.assertTrue(numpy.array_equal(key_binding.unassigned(), range(2, 5)))
+        self.assertTrue(numpy.array_equal(key_binding.get_unassigned(), range(2, 5)))
         self.assertFalse(key_binding.fully_assigned())
         self.assertTrue(key_binding.assign_next(2))
-        self.assertTrue(numpy.array_equal(key_binding.unassigned(), range(3, 5)))
+        self.assertTrue(numpy.array_equal(key_binding.get_unassigned(), range(3, 5)))
         self.assertTrue(key_binding.assign_next(3))
         self.assertTrue(key_binding.fully_assigned())
-        self.assertTrue(numpy.array_equal(key_binding.unassigned(), [4]))
+        self.assertTrue(numpy.array_equal(key_binding.get_unassigned(), [4]))
 
         self.assertEqual(key_binding.get_assignment("wrack"), 0)
         self.assertEqual(key_binding.get_assignment("wrack #2"), 1)
