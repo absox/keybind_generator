@@ -23,5 +23,6 @@ class TestGraph(unittest.TestCase):
     def test_path_length(self):
         self.assertEqual(self.graph.path_length([0, 1, 2]), 2.5)
 
+
 if __name__ == '__main__':
     unittest.main()

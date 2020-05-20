@@ -57,6 +57,5 @@ class TestKeyboard(unittest.TestCase):
         self.assertEqual(graph.adjacency[9, 9], 0)
 
 
-
 if __name__ == '__main__':
     unittest.main()
