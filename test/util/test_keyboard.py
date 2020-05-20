@@ -24,11 +24,6 @@ class TestKeyboard(unittest.TestCase):
                              modifier_penalty=4)
         graph = keyboard.generate_graph()
 
-        self.assertEqual(graph.adjacency[0, 0], 0)
-        self.assertEqual(graph.adjacency[0, 1], 1)
-        self.assertEqual(graph.adjacency[0, 2], 2)
-        self.assertEqual(graph.adjacency[0, 3], 3)
-
         self.assertEqual(graph.adjacency[0, 8], 4)
         self.assertEqual(graph.adjacency[0, 9], 5)
         self.assertEqual(graph.adjacency[0, 10], 6)

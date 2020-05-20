@@ -1,6 +1,7 @@
 from typing import List, Union, Iterable
 
 import numpy
+from pandas import Index
 
 
 class Graph:
@@ -11,8 +12,10 @@ class Graph:
         :param size: Number of nodes in the graph
         :param names: Names of the nodes
         """
-        self.adjacency = numpy.zeros((size, size)) # Weights between nodes
+        self.adjacency = numpy.zeros((size, size))  # Weights between nodes
+        self.size = size
         self.names = names
+        self.name_index = Index(names)
 
     def minimum_distance(self, nodes_from: Union[int, List[int]], nodes_to: Union[int, List[int]]) -> float:
         """
@@ -34,6 +37,17 @@ class Graph:
             return 0
         length = 0
         for index in range(len(nodes)-1):
-            length = length + self.adjacency[nodes[index],nodes[index+1]]
+            length = length + self.adjacency[nodes[index], nodes[index+1]]
 
         return length
+
+    def get_node_index(self, name: str) -> int:
+        """
+        Gets index of node
+        :param name: Name of node
+        :return: index of node
+        """
+        return self.name_index.get_loc(name)
+
+    def get_node_indices(self, names: List[str]) -> List[int]:
+        return [self.get_node_index(name) for name in names]
