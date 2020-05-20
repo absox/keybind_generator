@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List
 
+from pandas import Index
+
 from keybind_generator.util.Graph import Graph
 
 import numpy
@@ -20,7 +22,7 @@ class Keyboard:
             Converts to string representation
             :return: String representation of the key
             """
-            if self.modifier is None:
+            if not self.modifier:
                 return self.key
             return f"%s+%s" % (self.modifier, self.key)
 
@@ -136,15 +138,26 @@ class Keyboard:
         :param modifier: Modifier key
         :param mouse_penalty: Penalty incurred for using other mouse keys in succession
         :param modifier_penalty: Penalty incurred for changing modifier
+
         :return:
         """
 
         for key in keys:
             self.entries.append(Keyboard.MouseKeyEntry(key, mouse_penalty, modifier, modifier_penalty))
 
-    def generate_graph(self) -> Graph:
+    def get_index(self, key: str):
+        """
+        Gets node index of key
+        :param key: Name of key
+        :return: node index of key
+        """
+        return Index([str(entry) for entry in self.entries]).get_loc(key)
+
+    def generate_graph(self, node_groups: List[int] = None, group_penalty: float = 0) -> Graph:
         """
         Generates graph object from the keys in this Keyboard object
+        :param node_groups: If nodes are grouped (e.g. by finger)
+        :param group_penalty: Penalty for repeating groups
         :return: Graph representation of keyboard
         """
         # Count the total number of nodes, compute the names of keys
@@ -155,6 +168,8 @@ class Keyboard:
         for i in range(size):
             for j in range(i+1, size):
                 distance = self.entries[i].distance_to(self.entries[j])
+                if node_groups is not None and node_groups[i] == node_groups[j]:
+                    distance = distance + group_penalty
                 graph.adjacency[i, j] = distance
                 graph.adjacency[j, i] = distance
         return graph

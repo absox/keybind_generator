@@ -19,19 +19,47 @@ class TestKeyBinding(unittest.TestCase):
 
         cls.abilities = DataFrame([["wrack", 1, "Yes", numpy.nan],
                                   ["wrack #2", 1, "Yes", numpy.nan],
-                                  ["wrack #3", 1, "Yes", numpy.nan],
+                                  ["ice barrage", 1, "Yes", numpy.nan],
                                   ["dbreath", 2, "Yes", numpy.nan]])
+        cls.abilities.columns = ["name", "priority", "bar", "comment"]
 
-        cls.combinations = DataFrame([["wrack>wrack #2", 1, "Yes", ""],
-                                     ["wrack #2>wrack #3", 1, "Yes", ""]])
+        cls.combinations = DataFrame([["ice barrage>wrack", 2, "Yes", "", [2, 0]],
+                                     ["ice barrack>wrack #2", 2, "Yes", "", [2, 1]]])
+        cls.combinations.columns = ["name", "priority", "ordered", "comment", "indices"]
 
     def test_key_binding_assignment(self):
-
         key_binding = KeyBinding(self.graph, self.abilities, self.combinations, self.graph.get_node_indices(["a", "b"]))
 
+        self.assertTrue(numpy.array_equal(key_binding.unassigned(), range(5)))
+        self.assertTrue(key_binding.assign_next(0))
+        self.assertTrue(numpy.array_equal(key_binding.unassigned(), range(1, 5)))
+        self.assertFalse(key_binding.fully_assigned())
+        self.assertTrue(key_binding.assign_next(1))
+        self.assertTrue(numpy.array_equal(key_binding.unassigned(), range(2, 5)))
+        self.assertFalse(key_binding.fully_assigned())
+        self.assertTrue(key_binding.assign_next(2))
+        self.assertTrue(numpy.array_equal(key_binding.unassigned(), range(3, 5)))
+        self.assertTrue(key_binding.assign_next(3))
+        self.assertTrue(key_binding.fully_assigned())
+        self.assertTrue(numpy.array_equal(key_binding.unassigned(), [4]))
+
+        self.assertEqual(key_binding.get_assignment("wrack"), 0)
+        self.assertEqual(key_binding.get_assignment("wrack #2"), 1)
+        self.assertEqual(key_binding.get_assignment("ice barrage"), 2)
+        self.assertEqual(key_binding.get_assignment("dbreath"), 3)
+
     def test_loss_function(self):
-        # TODO
-        pass
+        key_binding = KeyBinding(self.graph, self.abilities, self.combinations, self.graph.get_node_indices(["a", "b"]))
+        key_binding.assign_next(0)
+        key_binding.assign_next(1)
+
+        self.assertTrue(numpy.isnan(key_binding.eval_loss()))
+
+        self.assertTrue(key_binding.assign_next(2))
+        self.assertTrue(key_binding.assign_next(3))
+
+        self.assertFalse(numpy.isnan(key_binding.eval_loss()))
+        self.assertEqual(key_binding.eval_loss(), 3.5)
 
 
 if __name__ == '__main__':

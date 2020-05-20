@@ -50,6 +50,18 @@ class TestKeyboard(unittest.TestCase):
 
         self.assertEqual(graph.adjacency[9, 9], 0)
 
+    def test_keyboard_get_key_index(self):
+        keyboard = Keyboard()
+        keyboard.add_key_row(Keyboard.KeyRow(2.5, 1.2, ["Q", "W", "E", "R", "T", "Y"]))
+        keyboard.add_key_row(Keyboard.KeyRow(3.5, 1.5, ["A", "S", "D", "F", "G", "H"]))
+        keyboard.add_key_row(Keyboard.KeyRow(3.5, 1.5, ["A", "S", "D", "F", "G", "H"]), modifier="Shift")
+
+        self.assertEqual(keyboard.get_index("Q"), 0)
+        self.assertEqual(keyboard.get_index("A"), 6)
+        self.assertEqual(keyboard.get_index("Shift+A"), 12)
+
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()
