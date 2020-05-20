@@ -52,7 +52,6 @@ class TestKeyboard(unittest.TestCase):
 
         self.assertEqual(graph.adjacency[0, 9], 0)
         self.assertEqual(graph.adjacency[0, 10], 0)
-        self.assertEqual(graph.adjacency[0, 11], 0)
 
         self.assertEqual(graph.adjacency[9, 9], 0)
 
