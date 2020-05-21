@@ -47,6 +47,21 @@ class KeyBinding:
         :param data:
         :return:
         """
+        self.assignments = [0] * self.abilities.shape[0]
+
+        def assignment_function(row):
+            # print(f"Assigning %s : %s" % (row["ability"], str(row["bind"])))
+
+            ability_index = self.ability_index.get_loc(row["ability"])
+            # print(f"Ability index: %d" % ability_index)
+
+            bind_index = self.graph.get_node_index(row["bind"])
+            # print(f"Bind index: %d" % bind_index)
+
+            self.assignments[ability_index] = bind_index
+
+        data.apply(assignment_function, axis=1)
+
         # TODO
         pass
 

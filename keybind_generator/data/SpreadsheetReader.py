@@ -5,6 +5,8 @@ import os
 
 from pandas import DataFrame, Index
 
+from keybind_generator.util.Keyboard import Keyboard
+
 
 class SpreadsheetReader:
     """
@@ -73,8 +75,16 @@ class SpreadsheetReader:
         :return:
         """
         if self.type is "excel":
-            data: DataFrame = pandas.read_excel(self.file, sheet_name)
+            data: DataFrame = pandas.read_excel(self.file, sheet_name, dtype={"Ability Name": str, "Bind": str})
         else:
             data: DataFrame = pandas.read_csv(self.file)
         data.columns = ["ability", "bind"]
         return data
+
+    def read_keyboard_layout(self, sheet_name: str = "") -> Keyboard:
+        """
+        Reads a keyboard layout from a spreadsheet
+        :param sheet_name:
+        :return:
+        """
+        pass
