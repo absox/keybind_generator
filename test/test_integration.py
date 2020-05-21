@@ -3,6 +3,7 @@ import unittest
 from pandas import DataFrame
 
 from keybind_generator.data.SpreadsheetReader import SpreadsheetReader
+from keybind_generator.solver.MonteCarloTreeSearchSolver import MonteCarloTreeSearchSolver
 from keybind_generator.solver.PepegaSolver import PepegaSolver
 from keybind_generator.util.Graph import Graph
 from keybind_generator.util.KeyBinding import KeyBinding
@@ -49,23 +50,30 @@ class TestIntegration(unittest.TestCase):
         cls.keyboard.add_mouse_keys(["Mouse1", "Mouse2", "Mouse3", "Mouse4", "Mouse5", "Mouse6", "Mouse7", "Mouse8",
                                      "Mouse9", "Mouse10", "Mouse11", "Mouse12"],
                                     mouse_penalty=6, modifier="Alt", modifier_penalty=6)
+        cls.spreadsheet_reader = SpreadsheetReader(str(base_dir) + "\\assets\\abilities.xlsx")
+        cls.abilities: DataFrame = cls.spreadsheet_reader.read_abilities("Magic DW Abilities")
+        cls.combinations = cls.spreadsheet_reader.read_combinations(cls.abilities, "Magic Combinations")
+        cls.graph: Graph = cls.keyboard.generate_graph()
+        cls.home_nodes = cls.graph.get_node_indices(["A", "S", "D", "F"])
 
     def test_random_solver_actual(self):
-        spreadsheet_reader = SpreadsheetReader(str(base_dir) + "\\assets\\abilities.xlsx")
-        abilities: DataFrame = spreadsheet_reader.read_abilities("Magic DW Abilities")
-        combinations = spreadsheet_reader.read_combinations(abilities, "Magic Combinations")
+        # print(self.home_nodes)
 
-        graph: Graph = self.keyboard.generate_graph()
-        home_nodes = graph.get_node_indices(["A", "S", "D", "F"])
-
-        print(home_nodes)
-
-        random_solver = PepegaSolver(graph, abilities, combinations, home_nodes)
+        random_solver = PepegaSolver(self.graph, self.abilities, self.combinations, self.home_nodes)
 
         random_solver.do_num_iter(10000)
 
         print(random_solver.best_binding)
         print(f"Best loss: %f" % random_solver.best_loss)
+
+    def test_mcts_solver_actual(self):
+        mcts_solver = MonteCarloTreeSearchSolver(self.graph, self.abilities, self.combinations, self.home_nodes)
+
+        mcts_solver.do_num_iter(100000)
+
+        print(mcts_solver.best_binding)
+        print(f"Best loss: %f" % mcts_solver.best_loss)
+
 
     def test_predefined_loss(self):
         # [print(entry) for entry in self.keyboard.entries]

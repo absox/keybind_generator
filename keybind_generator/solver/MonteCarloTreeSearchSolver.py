@@ -1,6 +1,8 @@
 from typing import List
 
 import numpy
+import progressbar
+
 from pandas import DataFrame
 
 from keybind_generator.util.Graph import Graph
@@ -13,13 +15,10 @@ class MonteCarloTreeSearchSolver:
         """
         A Node in the monte carlo tree
         """
-        def __init__(self, assignments: List[int], unassigned: List[int]):
+        def __init__(self, num_children):
             self.visits: int = 0
             self.loss: float = 0
-
-            self.assignments = assignments
-            self.unassigned = unassigned
-            self.children = [None] * len(unassigned)
+            self.children: List = [None] * num_children
 
         @staticmethod
         def compute_uct(parent, child):
@@ -43,10 +42,10 @@ class MonteCarloTreeSearchSolver:
             unvisited_children = [idx for idx, value in enumerate(self.children) if value is None]
             if len(unvisited_children) > 0:
                 index = numpy.random.randint(0, len(unvisited_children))
-                binding.assign_next(self.unassigned[unvisited_children[index]])
+                binding.assign_next(binding.unassigned[unvisited_children[index]])
                 # Make sure we call copy constructor on list of assignments and bindings
                 self.children[unvisited_children[index]] =\
-                    MonteCarloTreeSearchSolver.Node(list(binding.assignments), list(binding.get_unassigned()))
+                    MonteCarloTreeSearchSolver.Node(len(binding.unassigned))
                 loss, binding = self.children[unvisited_children[index]].run_iteration(binding)
                 self.update_loss(loss)
                 return loss, binding
@@ -55,7 +54,7 @@ class MonteCarloTreeSearchSolver:
                 uct_values = [MonteCarloTreeSearchSolver.Node.compute_uct(self, child) for child in self.children]
                 indices = numpy.where(uct_values == numpy.max(uct_values))[0]
                 index = numpy.random.randint(0, len(indices))
-                binding.assign_next(self.unassigned[indices[index]])
+                binding.assign_next(binding.unassigned[indices[index]])
                 loss, binding = self.children[indices[index]].run_iteration(binding)
                 self.update_loss(loss)
                 return loss, binding
@@ -70,7 +69,7 @@ class MonteCarloTreeSearchSolver:
         self.best_loss = numpy.inf
 
         binding = KeyBinding(self.graph, self.abilities, self.combinations, self.home_node_indices)
-        self.root = MonteCarloTreeSearchSolver.Node(binding.assignments, binding.get_unassigned())
+        self.root = MonteCarloTreeSearchSolver.Node(len(binding.unassigned))
 
     def run_iter(self) -> (float, KeyBinding):
         binding = KeyBinding(self.graph, self.abilities, self.combinations, self.home_node_indices)
@@ -82,7 +81,7 @@ class MonteCarloTreeSearchSolver:
         return loss, binding
 
     def do_num_iter(self, num_iterations) -> (float, KeyBinding):
-        for i in range(num_iterations):
+        for i in progressbar.progressbar(range(num_iterations)):
             self.run_iter()
         return self.best_loss, self.best_binding
 
