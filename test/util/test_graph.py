@@ -1,7 +1,10 @@
 import unittest
 import numpy
+from pandas import DataFrame
 
+from keybind_generator.data.SpreadsheetReader import SpreadsheetReader
 from keybind_generator.util.Graph import Graph
+from test import base_dir
 
 
 class TestGraph(unittest.TestCase):

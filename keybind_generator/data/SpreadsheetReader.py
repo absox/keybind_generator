@@ -65,3 +65,16 @@ class SpreadsheetReader:
             lambda entry: self.parse_combination_string(Index(abilities["name"]), entry)))
 
         return data
+
+    def read_binds(self, sheet_name: str = ""):
+        """
+        Reads binds from a spreadsheet, returns a DataFrame in proper format
+        :param sheet_name: Name of sheet within an excel file
+        :return:
+        """
+        if self.type is "excel":
+            data: DataFrame = pandas.read_excel(self.file, sheet_name)
+        else:
+            data: DataFrame = pandas.read_csv(self.file)
+        data.columns = ["ability", "bind"]
+        return data

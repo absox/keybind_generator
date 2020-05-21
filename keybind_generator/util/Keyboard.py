@@ -42,7 +42,8 @@ class Keyboard:
         """
         Key entry which resides on the keyboard.
         """
-        def __init__(self, key: str, x: float, y: float, modifier: str = "", modifier_penalty: float = 0):
+        def __init__(self, key: str, x: float, y: float, modifier: str = "", modifier_penalty: float = 0,
+                     horizontal_coefficient: float = 1, vertical_coefficient: float = 1):
             """
             Initializes key entry
             :param key: Name of key
@@ -57,10 +58,14 @@ class Keyboard:
             self.modifier = modifier
             self.modifier_penalty = modifier_penalty
 
+            self.horizontal_coefficient = horizontal_coefficient
+            self.vertical_coefficient = vertical_coefficient
+
         def distance_to(self, other):
             if isinstance(other, Keyboard.KeyEntry):
                 # Return euclidean distance to other key entry
-                distance = numpy.sqrt(numpy.square(other.x-self.x)+numpy.square(other.y-self.y))
+                distance = numpy.sqrt(numpy.square(self.horizontal_coefficient*(other.x-self.x)) +
+                                      numpy.square((other.y-self.y)*self.vertical_coefficient))
             else:
                 # Distance between keyboard keys and mouse keys and vice versa is 0
                 distance = 0
@@ -111,11 +116,13 @@ class Keyboard:
             self.horizontal_offset = horizontal_offset
             self.keys: List[str] = keys
 
-    def __init__(self):
+    def __init__(self, horizontal_coefficient: float = 1, vertical_coefficient: float = 1):
         """
         Constructs a keyboard object.
         """
         self.entries: List[Keyboard.Key] = []
+        self.horizontal_coefficient = horizontal_coefficient
+        self.vertical_coefficient = vertical_coefficient
 
     def add_key_row(self, key_row: KeyRow, modifier: str = "", modifier_penalty: float = 0) -> None:
         """
@@ -127,8 +134,9 @@ class Keyboard:
         """
 
         for index, value in enumerate(key_row.keys):
-            self.entries.append(Keyboard.KeyEntry(key_row.keys[index], key_row.horizontal_offset+index,
-                                                      key_row.vertical_offset, modifier, modifier_penalty))
+            self.entries.append(Keyboard.KeyEntry(key_row.keys[index], key_row.horizontal_offset + index,
+                                                  key_row.vertical_offset, modifier, modifier_penalty,
+                                                  self.horizontal_coefficient, self.vertical_coefficient))
 
     def add_mouse_keys(self, keys: List[str], mouse_penalty: float, modifier: str = "", modifier_penalty: float = 0)\
             -> None:

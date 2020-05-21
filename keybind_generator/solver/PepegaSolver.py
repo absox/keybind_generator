@@ -4,6 +4,7 @@ from typing import List
 
 import numpy
 from pandas import DataFrame
+import progressbar
 
 from keybind_generator.util.Graph import Graph
 from keybind_generator.util.KeyBinding import KeyBinding
@@ -33,12 +34,13 @@ class PepegaSolver:
             current_binding.assign_next(current_unassigned[choice])
         loss = current_binding.eval_loss()
         if loss < self.best_loss:
+            print(f"New best loss: %f" % loss)
             self.best_loss = loss
             self.best_binding = current_binding
         self.num_iter = self.num_iter + 1  # Increment total number of iterations run by one
 
     def do_num_iter(self, num_iterations: int):
-        for i in range(num_iterations):
+        for i in progressbar.progressbar(range(num_iterations)):
             self.run_iter()
 
     def do_time(self, time: timedelta) -> int:

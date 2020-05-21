@@ -77,6 +77,10 @@ class TestKeyBinding(unittest.TestCase):
         self.assertFalse(numpy.isnan(key_binding.eval_loss()))
         self.assertEqual(key_binding.eval_loss(), 3.5)
 
+    def test_read_key_binding(self):
+        # TODO
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()

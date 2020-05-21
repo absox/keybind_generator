@@ -12,7 +12,8 @@ class KeyBinding:
     """
 
     def __init__(self, graph: Graph, abilities: DataFrame, combinations: DataFrame, home_nodes: List[int],
-                 assignments: List[int] = None, node_priority: List[float] = None):
+                 assignments: List[int] = None, node_priority: List[float] = None,
+                 individual_coefficient: float = 1, combination_coefficient: float = 1):
         """
         Initializes Key binding object.
         :param graph: Graph object for keys
@@ -36,6 +37,18 @@ class KeyBinding:
         self.assignments: List[int] = []
         if assignments is not None:
             self.assignments = assignments
+
+        self.individual_coefficient = individual_coefficient
+        self.combination_coefficient = combination_coefficient
+
+    def assign_from_data(self, data: DataFrame):
+        """
+        Assigns keys from a data frame containing binding data
+        :param data:
+        :return:
+        """
+        # TODO
+        pass
 
     def get_unassigned(self) -> numpy.array:
         """
@@ -116,7 +129,8 @@ class KeyBinding:
                     self.graph.path_length(entry) for entry in self.combinations["indices"]],
                     self.combinations["priority"])
 
-            return numpy.sum(individual_terms) + numpy.sum(combination_terms)
+            return self.individual_coefficient * numpy.sum(individual_terms) +\
+                   self.combination_coefficient * numpy.sum(combination_terms)
         else:
             return numpy.nan
 
