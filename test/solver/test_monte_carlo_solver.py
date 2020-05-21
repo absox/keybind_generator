@@ -3,14 +3,11 @@ import unittest
 import numpy
 from pandas import DataFrame
 
-from keybind_generator.data.SpreadsheetReader import SpreadsheetReader
-from keybind_generator.solver.PepegaSolver import PepegaSolver
+from keybind_generator.solver.MonteCarloTreeSearchSolver import MonteCarloTreeSearchSolver
 from keybind_generator.util.Graph import Graph
-from test import base_dir
 
 
-class TestPepegaSolver(unittest.TestCase):
-
+class TestMonteCarloSolver(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.graph = Graph(5, ["a", "b", "c", "d", "e"])
@@ -32,14 +29,12 @@ class TestPepegaSolver(unittest.TestCase):
 
         cls.home_nodes = cls.graph.get_node_indices(["a", "b"])
 
-    def test_random_solver(self):
-        pepega = PepegaSolver(self.graph, self.abilities, self.combinations, self.home_nodes)
-        pepega.do_num_iter(1000)
+    def test_mcts_solver(self):
+        mcts_solver = MonteCarloTreeSearchSolver(self.graph, self.abilities, self.combinations, self.home_nodes)
+        mcts_solver.do_num_iter(100)
 
-        print(f"Loss: %f" % pepega.best_loss)
-        print(pepega.best_binding)
-
-
+        print(mcts_solver.best_loss)
+        print(mcts_solver.best_binding)
 
 
 if __name__ == '__main__':

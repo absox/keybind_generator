@@ -11,9 +11,13 @@ from test import base_dir
 
 
 class TestIntegration(unittest.TestCase):
+    """
+    Integration tests
+    """
+
     @classmethod
     def setUpClass(cls) -> None:
-        cls.keyboard = Keyboard()
+        cls.keyboard = Keyboard(horizontal_coefficient=1, vertical_coefficient=1)
         cls.keyboard.add_key_row(Keyboard.KeyRow(0, 2, ["F1", "F2", "F3", "F4", "F5", "F6"]))
         cls.keyboard.add_key_row(Keyboard.KeyRow(1.5, 1, ["1", "2", "3", "4", "5", "6", "7"]))
         cls.keyboard.add_key_row(Keyboard.KeyRow(1.5, 1, ["1", "2", "3", "4", "5", "6", "7"]),
@@ -38,13 +42,13 @@ class TestIntegration(unittest.TestCase):
                                  modifier="Alt", modifier_penalty=8)
 
         cls.keyboard.add_mouse_keys(["Mouse1", "Mouse2", "Mouse3", "Mouse4", "Mouse5", "Mouse6", "Mouse7", "Mouse8",
-                                     "Mouse9", "Mouse10", "Mouse11", "Mouse12"], mouse_penalty=5)
+                                     "Mouse9", "Mouse10", "Mouse11", "Mouse12"], mouse_penalty=6)
         cls.keyboard.add_mouse_keys(["Mouse1", "Mouse2", "Mouse3", "Mouse4", "Mouse5", "Mouse6", "Mouse7", "Mouse8",
                                      "Mouse9", "Mouse10", "Mouse11", "Mouse12"],
-                                    mouse_penalty=5, modifier="Shift", modifier_penalty=4)
+                                    mouse_penalty=6, modifier="Shift", modifier_penalty=4)
         cls.keyboard.add_mouse_keys(["Mouse1", "Mouse2", "Mouse3", "Mouse4", "Mouse5", "Mouse6", "Mouse7", "Mouse8",
                                      "Mouse9", "Mouse10", "Mouse11", "Mouse12"],
-                                    mouse_penalty=5, modifier="Alt", modifier_penalty=4)
+                                    mouse_penalty=6, modifier="Alt", modifier_penalty=6)
 
     def test_random_solver_actual(self):
         spreadsheet_reader = SpreadsheetReader(str(base_dir) + "\\assets\\abilities.xlsx")
@@ -58,7 +62,7 @@ class TestIntegration(unittest.TestCase):
 
         random_solver = PepegaSolver(graph, abilities, combinations, home_nodes)
 
-        random_solver.do_num_iter(1000)
+        random_solver.do_num_iter(10000)
 
         print(random_solver.best_binding)
         print(f"Best loss: %f" % random_solver.best_loss)

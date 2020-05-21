@@ -36,7 +36,7 @@ class KeyBinding:
 
         self.assignments: List[int] = []
         if assignments is not None:
-            self.assignments = assignments
+            self.assignments = list(assignments)
 
         self.individual_coefficient = individual_coefficient
         self.combination_coefficient = combination_coefficient

@@ -30,7 +30,7 @@ class TestSpreadsheetReader(unittest.TestCase):
                                            abilities["name"][abilities["name"] == "Spellbook Swap: Normal"].index[0],
                                            abilities["name"][abilities["name"] == "Vulnerability"].index[0]]))
 
-        self.assertTrue(numpy.array_equal(combinations.shape, [24, 5]))
+        self.assertTrue(numpy.array_equal(combinations.shape, [30, 5]))
 
     def test_parse_combinations(self):
         ability_names = Series(["Ability 1", "Ability 2", "Ability 3"])
