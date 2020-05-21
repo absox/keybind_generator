@@ -69,7 +69,7 @@ class TestIntegration(unittest.TestCase):
     def test_mcts_solver_actual(self):
         mcts_solver = MonteCarloTreeSearchSolver(self.graph, self.abilities, self.combinations, self.home_nodes)
 
-        mcts_solver.do_num_iter(100000)
+        mcts_solver.do_num_iter(1000)
 
         print(mcts_solver.best_binding)
         print(f"Best loss: %f" % mcts_solver.best_loss)

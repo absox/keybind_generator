@@ -59,7 +59,8 @@ class MonteCarloTreeSearchSolver:
                 self.update_loss(loss)
                 return loss, binding
 
-    def __init__(self, graph: Graph, abilities: DataFrame, combinations: DataFrame, home_node_indices: List[int]):
+    def __init__(self, graph: Graph, abilities: DataFrame, combinations: DataFrame, home_node_indices: List[int],
+                 assignments: List[int] = None):
         self.graph = graph
         self.abilities = abilities
         self.combinations = combinations
@@ -68,16 +69,23 @@ class MonteCarloTreeSearchSolver:
         self.best_binding = None
         self.best_loss = numpy.inf
 
-        binding = KeyBinding(self.graph, self.abilities, self.combinations, self.home_node_indices)
+        self.assignments: List[int] = []
+        if assignments is not None:
+            self.assignments = assignments
+
+        binding = KeyBinding(self.graph, self.abilities, self.combinations, self.home_node_indices,
+                             self.assignments)
         self.root = MonteCarloTreeSearchSolver.Node(len(binding.unassigned))
 
     def run_iter(self) -> (float, KeyBinding):
-        binding = KeyBinding(self.graph, self.abilities, self.combinations, self.home_node_indices)
+        binding = KeyBinding(self.graph, self.abilities, self.combinations, self.home_node_indices,
+                             self.assignments)
         loss, binding = self.root.run_iteration(binding)
 
         if loss < self.best_loss:
             self.best_loss = loss
             self.best_binding = binding
+            # print(f"New loss: %f" % loss)
         return loss, binding
 
     def do_num_iter(self, num_iterations) -> (float, KeyBinding):

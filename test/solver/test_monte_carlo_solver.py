@@ -36,6 +36,10 @@ class TestMonteCarloSolver(unittest.TestCase):
         print(mcts_solver.best_loss)
         print(mcts_solver.best_binding)
 
+        for child in mcts_solver.root.children:
+            print(f"%d %f" % (child.visits, child.loss))
+
+
 
 if __name__ == '__main__':
     unittest.main()
