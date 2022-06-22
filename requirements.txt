@@ -3,7 +3,7 @@ descartes==1.1.0
 kiwisolver==1.2.0
 matplotlib==3.2.1
 mizani==0.6.0
-numpy==1.18.4
+numpy==1.22.0
 palettable==3.3.0
 pandas==1.0.3
 patsy==0.5.1
